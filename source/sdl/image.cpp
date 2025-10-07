@@ -16,14 +16,13 @@ static std::vector<std::string> toDelete;
 
 Image::Image(std::string filePath) {
     if (!loadImageFromFile(filePath, false)) return;
-    std::string imgId = filePath.substr(0, filePath.find_last_of('.'));
-    imageId = imgId;
-    width = images[imgId]->width;
-    height = images[imgId]->height;
+    imageId = filePath.substr(0, filePath.find_last_of('.'));
+    width = images[imageId]->width;
+    height = images[imageId]->height;
     scale = 1.0;
     rotation = 0.0;
     opacity = 1.0;
-    images[imgId]->imageUsageCount++;
+    images[imageId]->imageUsageCount++;
 }
 
 Image::~Image() {
@@ -95,7 +94,6 @@ void Image::renderNineslice(double xPos, double yPos, double width, double heigh
     const SDL_Rect dstTopLeft = {iDestX, iDestY, iSrcPadding, iSrcPadding};
     const SDL_Rect dstTop = {iDestX + iSrcPadding, iDestY, dstCenterWidth, iSrcPadding};
     const SDL_Rect dstTopRight = {iDestX + iSrcPadding + dstCenterWidth, iDestY, iSrcPadding, iSrcPadding};
-
     const SDL_Rect dstLeft = {iDestX, iDestY + iSrcPadding, iSrcPadding, dstCenterHeight};
     const SDL_Rect dstCenter = {iDestX + iSrcPadding, iDestY + iSrcPadding, dstCenterWidth, dstCenterHeight};
     const SDL_Rect dstRight = {iDestX + iSrcPadding + dstCenterWidth, iDestY + iSrcPadding, iSrcPadding, dstCenterHeight};

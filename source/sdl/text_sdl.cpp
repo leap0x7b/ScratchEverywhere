@@ -16,7 +16,7 @@ TextObjectSDL::TextObjectSDL(std::string txt, double posX, double posY, std::str
 
     // get font
     if (fontPath.empty()) {
-        fontPath = "gfx/menu/Arialn";
+        fontPath = FONT_ARIAL_NARROW;
     }
     fontPath = OS::getRomFSLocation() + fontPath;
     fontPath = fontPath + ".ttf";

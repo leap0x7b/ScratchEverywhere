@@ -13,6 +13,10 @@ extern C3D_Tex *penTex;
 #include <SDL2/SDL.h>
 
 extern SDL_Texture *penTexture;
+#elif defined(ALLEGRO4_BUILD)
+#include <allegro.h>
+
+extern BITMAP *penBitmap;
 #else
 #error Unsupported Platform.
 #endif

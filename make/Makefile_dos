@@ -1,40 +1,24 @@
 .PHONY: all clean debug release
 
-BACKEND    := sdl
-TARGET     := Scratch-pc
-BUILD      := build/pc
-SOURCES    := source source/scratch source/scratch/blocks source/scratch/menus include/miniz include/nlohmann
-INCLUDES   := include source/scratch source/scratch/blocks source/scratch/menus include/nlohmann
-ifeq ($(BACKEND),sdl)
-SOURCES    += source/sdl source/sdl/audio
-INCLUDES   += source/sdl source/sdl/audio
-else ifeq ($(BACKEND),allegro4)
-SOURCES    += source/allegro4 source/allegro4/audio
-INCLUDES   += source/allegro4 source/allegro4/audio
-endif
+PREFIX     := i686-pc-msdosdjgpp-
+TARGET     := scratch.exe
+BUILD      := build/dos
+SOURCES    := source source/scratch source/scratch/blocks source/scratch/menus source/allegro4 source/allegro4/audio include/miniz include/nlohmann
+INCLUDES   := include source/scratch source/scratch/blocks source/scratch/menus source/allegro4 source/allegro4/audio include/nlohmann
 
-CXX        := g++
-CC         := gcc
+CXX        := $(PREFIX)g++
+CC         := $(PREFIX)gcc
+PKGCONF    := $(PREFIX)pkg-config
 
 # Config Options
 ENABLE_CLOUDVARS	?=	0
-ENABLE_AUDIO	?=	1
-ENABLE_LOADSCREEN	?=	1
+ENABLE_AUDIO	?=	0
+ENABLE_LOADSCREEN	?=	0
 
 # Base compiler flags
-CFLAGS_BASE   := -D__PC__
+CFLAGS_BASE   := -march=pentium -D__DOS__ -DALLEGRO4_BUILD
 
-ifeq ($(BACKEND),sdl)
-LDFLAGS := -lSDL2 -lSDL2_image -lSDL2_ttf -lSDL2_gfx
-CFLAGS_BASE +=  -DSDL_BUILD
-
-ifeq ($(ENABLE_AUDIO),1)
-LDFLAGS	+=	-lSDL2_mixer
-endif
-else ifeq ($(BACKEND),allegro4)
-LDFLAGS := -lalleg
-CFLAGS_BASE +=  -DALLEGRO4_BUILD
-endif
+LDFLAGS    := -lalleg
 
 ifeq ($(ENABLE_AUDIO),1)
 CFLAGS_BASE	+=	-DENABLE_AUDIO
@@ -54,14 +38,14 @@ $(error "[ERROR] Mist++ must be v0.1.4 or newer.")
 endif
 endif
 
-CXXFLAGS_BASE := $(CFLAGS_BASE) -std=c++17 -Wall -fexceptions
+CXXFLAGS_BASE := $(CFLAGS_BASE) -std=gnu++17 -Wall -fexceptions
 
 # Debug and Release flags
-CXXFLAGS_DEBUG   := $(CXXFLAGS_BASE) -fsanitize=address -g -O0 -DDEBUG
-CXXFLAGS_RELEASE := $(CXXFLAGS_BASE) -O2 -DNDEBUG
+CXXFLAGS_DEBUG   := $(CXXFLAGS_BASE) -g -O0 -DDEBUG
+CXXFLAGS_RELEASE := $(CXXFLAGS_BASE) -Ofast -DNDEBUG
 
-CFLAGS_DEBUG   := $(CFLAGS_BASE) -fsanitize=address -g -O0 -DDEBUG
-CFLAGS_RELEASE := $(CFLAGS_BASE) -O2 -DNDEBUG
+CFLAGS_DEBUG   := $(CFLAGS_BASE) -g -O0 -DDEBUG
+CFLAGS_RELEASE := $(CFLAGS_BASE) -Ofast -DNDEBUG
 
 # Find all .cpp and .c files recursively
 SRC_CPP    := $(foreach dir,$(SOURCES),$(wildcard $(dir)/*.cpp))
@@ -80,7 +64,6 @@ all: debug
 # Debug build
 debug: CXXFLAGS := $(CXXFLAGS_DEBUG)
 debug: CFLAGS   := $(CFLAGS_DEBUG)
-debug: LDFLAGS	+= -fsanitize=address
 debug: $(BUILD)/debug/$(TARGET)
 
 # Release build

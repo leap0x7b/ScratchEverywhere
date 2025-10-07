@@ -112,7 +112,11 @@ class Unzip {
 #endif
 
     static std::string getSplashText() {
+#ifdef __DOS__
+        std::string textPath = "gfx/menu/splash.txt";
+#else
         std::string textPath = "gfx/menu/splashText.txt";
+#endif
 
         textPath = OS::getRomFSLocation() + textPath;
 

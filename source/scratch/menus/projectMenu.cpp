@@ -13,7 +13,7 @@ ProjectMenu::~ProjectMenu() {
 void ProjectMenu::init() {
 
     projectControl = new ControlObject();
-    backButton = new ButtonObject("", "gfx/menu/buttonBack.svg", 375, 20, "gfx/menu/Ubuntu-Bold");
+    backButton = new ButtonObject("", GFX_BUTTON_BACK, 375, 20, FONT_UBUNTU_BOLD);
     backButton->needsToBeSelected = false;
     backButton->scale = 1.0;
 
@@ -23,7 +23,7 @@ void ProjectMenu::init() {
     // initialize text and set positions
     int yPosition = 120;
     for (std::string &file : projectFiles) {
-        ButtonObject *project = new ButtonObject(file.substr(0, file.length() - 4), "gfx/menu/projectBox.svg", 0, yPosition, "gfx/menu/Ubuntu-Bold");
+        ButtonObject *project = new ButtonObject(file.substr(0, file.length() - 4), GFX_PROJECT_BOX, 0, yPosition, FONT_UBUNTU_BOLD);
         project->text->setColor(Math::color(0, 0, 0, 255));
         project->canBeClicked = false;
         project->y -= project->text->getSize()[1] / 2;
@@ -36,7 +36,7 @@ void ProjectMenu::init() {
         yPosition += 50;
     }
     for (std::string &file : UnzippedFiles) {
-        ButtonObject *project = new ButtonObject(file, "gfx/menu/projectBoxFast.png", 0, yPosition, "gfx/menu/Ubuntu-Bold");
+        ButtonObject *project = new ButtonObject(file, GFX_PROJECT_BOX_FAST, 0, yPosition, FONT_UBUNTU_BOLD);
         project->text->setColor(Math::color(126, 101, 1, 255));
         project->canBeClicked = false;
         project->y -= project->text->getSize()[1] / 2;
@@ -64,7 +64,7 @@ void ProjectMenu::init() {
     // check if user has any projects
     if (projectFiles.size() == 0 && UnzippedFiles.size() == 0) {
         hasProjects = false;
-        noProjectsButton = new ButtonObject("", "gfx/menu/noProjects.svg", 200, 120, "gfx/menu/Ubuntu-Bold");
+        noProjectsButton = new ButtonObject("", GFX_NO_PROJECTS, 200, 120, FONT_UBUNTU_BOLD);
         projectControl->selectedObject = noProjectsButton;
         projectControl->selectedObject->isSelected = true;
         noProjectsText = createTextObject("No Scratch projects found!", 0, 0);
@@ -100,8 +100,8 @@ void ProjectMenu::init() {
         projectControl->selectedObject->isSelected = true;
         cameraY = projectControl->selectedObject->y;
         hasProjects = true;
-        playButton = new ButtonObject("Play (A)", "gfx/menu/optionBox.svg", 95, 230, "gfx/menu/Ubuntu-Bold");
-        settingsButton = new ButtonObject("Settings (L)", "gfx/menu/optionBox.svg", 315, 230, "gfx/menu/Ubuntu-Bold");
+        playButton = new ButtonObject("Play (A)", GFX_OPTION_BOX, 95, 230, FONT_UBUNTU_BOLD);
+        settingsButton = new ButtonObject("Settings (L)", GFX_OPTION_BOX, 315, 230, FONT_UBUNTU_BOLD);
         playButton->scale = 0.6;
         settingsButton->scale = 0.6;
         settingsButton->needsToBeSelected = false;

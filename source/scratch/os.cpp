@@ -109,6 +109,8 @@ std::string OS::getScratchFolderLocation() {
     return "ux0:data/scratch-vita/";
 #elif defined(__3DS__)
     return "sdmc:/3ds/scratch-everywhere/";
+#elif defined(__DOS__)
+    return "scratch/";
 #else
     return "scratch-everywhere/";
 #endif
@@ -137,6 +139,8 @@ std::string OS::getPlatform() {
     return "Switch";
 #elif defined(VITA)
     return "Vita";
+#elif defined(__DOS__)
+    return "DOS";
 #else
     return "Unknown";
 #endif

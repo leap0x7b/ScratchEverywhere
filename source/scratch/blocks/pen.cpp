@@ -16,6 +16,12 @@ C3D_Tex *penTex;
 #include <SDL2/SDL2_gfxPrimitives.h>
 
 SDL_Texture *penTexture;
+#elif defined(ALLEGRO4_BUILD)
+#include "../../allegro4/image.hpp"
+#include "../../allegro4/render.hpp"
+#include <allegro.h>
+
+BITMAP *penBitmap;
 #else
 #error Unsupported Platform.
 #endif
@@ -62,6 +68,12 @@ BlockResult PenBlocks::PenDown(Block &block, Sprite *sprite, bool *withoutScreen
     const float yScaled = (sprite->yPosition * -1 * scale) + (SCREEN_HEIGHT * 0.5);
     const float radius = thickness / 2.0f;
     C2D_DrawCircleSolid(xSscaled, yScaled, 0, radius, color);
+#elif defined(ALLEGRO4_BUILD)
+    const ColorRGB rgbColor = HSB2RGB(sprite->penData.color);
+    int pen_color = makeacol32(rgbColor.r, rgbColor.g, rgbColor.b, (sprite->penData.transparency - 100) / 100 * 255);
+
+    drawing_mode(DRAW_MODE_TRANS, NULL, 0, 0);
+    circlefill(penBitmap, sprite->xPosition + (Scratch::projectWidth / 2), -sprite->yPosition + (Scratch::projectHeight / 2), sprite->penData.size / 2, pen_color);
 #endif
 
     return BlockResult::CONTINUE;
@@ -317,6 +329,92 @@ BlockResult PenBlocks::Stamp(Block &block, Sprite *sprite, bool *withoutScreenRe
         &tinty,
         (spriteSize)*scale / 2.0f,
         (spriteSize)*scale / 2.0f);
+
+    return BlockResult::CONTINUE;
+}
+#elif defined(ALLEGRO4_BUILD)
+BlockResult PenBlocks::EraseAll(Block &block, Sprite *sprite, bool *withoutScreenRefresh, bool fromRepeat) {
+    if (!Render::initPen()) return BlockResult::CONTINUE;
+    clear_to_color(penBitmap, makeacol32(0, 0, 0, 0));
+    return BlockResult::CONTINUE;
+}
+
+BlockResult PenBlocks::Stamp(Block &block, Sprite *sprite, bool *withoutScreenRefresh, bool fromRepeat) {
+    if (!Render::initPen()) return BlockResult::CONTINUE;
+
+    const auto &imgFind = images.find(sprite->costumes[sprite->currentCostume].id);
+    if (imgFind == images.end()) {
+        Log::logWarning("Invalid Image for Stamp");
+        return BlockResult::CONTINUE;
+    }
+
+    // IDK if these are needed
+    sprite->rotationCenterX = sprite->costumes[sprite->currentCostume].rotationCenterX;
+    sprite->rotationCenterY = sprite->costumes[sprite->currentCostume].rotationCenterY;
+
+    // TODO: remove duplicate code (maybe make a Render::drawSprite function.)
+    AllegroImage *image = imgFind->second;
+    image->freeTimer = image->maxFreeTime;
+    bool flip = false;
+
+    sprite->spriteWidth = image->width / 2;
+    sprite->spriteHeight = image->height / 2;
+    if (sprite->costumes[sprite->currentCostume].isSVG) {
+        sprite->spriteWidth *= 2;
+        sprite->spriteHeight *= 2;
+    }
+    const double rotation = Math::degreesToRadians(sprite->rotation - 90.0f);
+    double renderRotation = rotation;
+
+    if (sprite->rotationStyle == sprite->LEFT_RIGHT) {
+        if (std::cos(rotation) < 0) flip = true;
+        renderRotation = 0;
+    }
+    if (sprite->rotationStyle == sprite->NONE) renderRotation = 0;
+
+    const double rotationCenterX = (((sprite->rotationCenterX - sprite->spriteWidth)) / 2);
+    const double rotationCenterY = (((sprite->rotationCenterY - sprite->spriteHeight)) / 2);
+
+    const double offsetX = rotationCenterX * (sprite->size * 0.01);
+    const double offsetY = rotationCenterY * (sprite->size * 0.01);
+
+    const double scale = std::min(static_cast<double>(windowWidth) / Scratch::projectWidth, static_cast<double>(windowHeight) / Scratch::projectHeight);
+
+    image->renderWidth /= scale;
+    image->renderHeight /= scale;
+
+    //int renderX = sprite->xPosition + (Scratch::projectWidth / 2);
+    //int renderY = -sprite->yPosition + (Scratch::projectHeight / 2);
+    int renderX = (sprite->xPosition + 240 - (image->renderWidth / 2)) - offsetX * std::cos(rotation) + offsetY * std::sin(renderRotation);
+    int renderY = (-sprite->yPosition + 180 - (image->renderHeight / 2)) - offsetX * std::sin(rotation) - offsetY * std::cos(renderRotation);
+
+    BITMAP *temp_buffer = create_bitmap(image->renderWidth, image->renderHeight);
+    if (!temp_buffer) return BlockResult::CONTINUE;
+    clear_to_color(temp_buffer, makeacol32(0, 0, 0, 0));
+
+    stretch_sprite(temp_buffer, image->sprite, 0, 0, image->renderWidth, image->renderHeight);
+
+    // ghost effect
+    set_trans_blender(0, 0, 0, static_cast<int>(255 * (1.0f - std::clamp(sprite->ghostEffect, 0.0f, 100.0f) / 100.0f)));
+    drawing_mode(DRAW_MODE_TRANS, NULL, 0, 0);
+
+    if (renderRotation != 0) {
+        fixed allegroAngle = ftofix(Math::radiansToAllegro(renderRotation));
+        pivot_sprite(penBitmap, temp_buffer, renderX, renderY, image->renderWidth / 2, image->renderHeight / 2, allegroAngle);
+    } else {
+        int drawX = renderX - (image->renderWidth / 2);
+        int drawY = renderY - (image->renderHeight / 2);
+        if (flip)
+            draw_sprite_h_flip(penBitmap, temp_buffer, drawX, drawY);
+        else
+            draw_sprite(penBitmap, temp_buffer, drawX, drawY);
+    }
+
+    image->renderWidth *= scale;
+    image->renderHeight *= scale;
+
+    drawing_mode(DRAW_MODE_SOLID, NULL, 0, 0);
+    destroy_bitmap(temp_buffer);
 
     return BlockResult::CONTINUE;
 }

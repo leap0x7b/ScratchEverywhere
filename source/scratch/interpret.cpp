@@ -128,7 +128,11 @@ bool Scratch::startScratchProject() {
     customUsername = "Player";
     useCustomUsername = false;
 
+#ifdef __DOS__
+    std::ifstream inFile(OS::getScratchFolderLocation() + "Settings.cfg");
+#else
     std::ifstream inFile(OS::getScratchFolderLocation() + "Settings.json");
+#endif
     if (inFile.good()) {
         nlohmann::json j;
         inFile >> j;

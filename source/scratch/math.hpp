@@ -15,6 +15,8 @@ double degreesToRadians(double degrees);
 
 double radiansToDegrees(double radians);
 
+double radiansToAllegro(double radians);
+
 std::string generateRandomString(int length);
 
 std::string removeQuotations(std::string value);

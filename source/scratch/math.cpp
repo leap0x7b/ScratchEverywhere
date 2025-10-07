@@ -5,6 +5,8 @@
 #include <string>
 #ifdef __3DS__
 #include <citro2d.h>
+#elif defined(ALLEGRO4_BUILD)
+#include <allegro.h>
 #endif
 
 int Math::color(int r, int g, int b, int a) {
@@ -20,6 +22,8 @@ int Math::color(int r, int g, int b, int a) {
            (g << 16) |
            (b << 8) |
            a;
+#elif defined(ALLEGRO4_BUILD)
+    return makeacol32(r, g, b, a);
 #endif
 }
 
@@ -61,6 +65,10 @@ double Math::degreesToRadians(double degrees) {
 
 double Math::radiansToDegrees(double radians) {
     return radians * (180.0 / M_PI);
+}
+
+double Math::radiansToAllegro(double radians) {
+    return radians * (128.0 / M_PI);
 }
 
 std::string Math::generateRandomString(int length) {

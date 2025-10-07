@@ -10,6 +10,14 @@
 #include <ogc/system.h>
 #endif
 
+#ifdef __DOS__
+#define FONT_ARIAL_NARROW   "gfx/menu/Arialn"
+#define FONT_UBUNTU_BOLD    "gfx/menu/UbuntuBd"
+#else
+#define FONT_ARIAL_NARROW   "gfx/menu/Arialn"
+#define FONT_UBUNTU_BOLD    "gfx/menu/Ubuntu-Bold"
+#endif
+
 class Render {
   public:
     static std::chrono::system_clock::time_point startTime;
@@ -25,7 +33,7 @@ class Render {
     static void deInit();
 
     /**
-     * [SDL] returns the current renderer.
+     * [SDL, Allegro 4] returns the current renderer.
      */
     static void *getRenderer();
 

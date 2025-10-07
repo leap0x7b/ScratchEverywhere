@@ -16,18 +16,18 @@ ProjectSettings::~ProjectSettings() {
 void ProjectSettings::init() {
     // initialize
 
-    changeControlsButton = new ButtonObject("Change Controls", "gfx/menu/projectBox.svg", 200, 80, "gfx/menu/Ubuntu-Bold");
+    changeControlsButton = new ButtonObject("Change Controls", GFX_PROJECT_BOX, 200, 80, FONT_UBUNTU_BOLD);
     changeControlsButton->text->setColor(Math::color(0, 0, 0, 255));
-    UnpackProjectButton = new ButtonObject("Unpack Project", "gfx/menu/projectBox.svg", 200, 130, "gfx/menu/Ubuntu-Bold");
+    UnpackProjectButton = new ButtonObject("Unpack Project", GFX_PROJECT_BOX, 200, 130, FONT_UBUNTU_BOLD);
     UnpackProjectButton->text->setColor(Math::color(0, 0, 0, 255));
-    DeleteUnpackProjectButton = new ButtonObject("Delete Unpacked Proj.", "gfx/menu/projectBox.svg", 200, 130, "gfx/menu/Ubuntu-Bold");
+    DeleteUnpackProjectButton = new ButtonObject("Delete Unpacked Proj.", GFX_PROJECT_BOX, 200, 130, FONT_UBUNTU_BOLD);
     DeleteUnpackProjectButton->text->setColor(Math::color(255, 0, 0, 255));
-    bottomScreenButton = new ButtonObject("Bottom Screen", "gfx/menu/projectBox.svg", 200, 180, "gfx/menu/Ubuntu-Bold");
+    bottomScreenButton = new ButtonObject("Bottom Screen", GFX_PROJECT_BOX, 200, 180, FONT_UBUNTU_BOLD);
     bottomScreenButton->text->setColor(Math::color(0, 0, 0, 255));
     bottomScreenButton->text->setScale(0.5);
 
     settingsControl = new ControlObject();
-    backButton = new ButtonObject("", "gfx/menu/buttonBack.svg", 375, 20, "gfx/menu/Ubuntu-Bold");
+    backButton = new ButtonObject("", GFX_BUTTON_BACK, 375, 20, FONT_UBUNTU_BOLD);
     backButton->scale = 1.0;
     backButton->needsToBeSelected = false;
 

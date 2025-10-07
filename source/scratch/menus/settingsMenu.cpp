@@ -13,16 +13,16 @@ void SettingsMenu::init() {
 
     settingsControl = new ControlObject();
 
-    backButton = new ButtonObject("", "gfx/menu/buttonBack.svg", 375, 20, "gfx/menu/Ubuntu-Bold");
+    backButton = new ButtonObject("", GFX_BUTTON_BACK, 375, 20, FONT_UBUNTU_BOLD);
     backButton->scale = 1.0;
     backButton->needsToBeSelected = false;
-    // Credits = new ButtonObject("Credits (dummy)", "gfx/menu/projectBox.svg", 200, 80, "gfx/menu/Ubuntu-Bold");
+    // Credits = new ButtonObject("Credits (dummy)", GFX_PROJECT_BOX, 200, 80, FONT_UBUNTU_BOLD);
     // Credits->text->setColor(Math::color(0, 0, 0, 255));
     // Credits->text->setScale(0.5);
-    EnableUsername = new ButtonObject("Username: clickToLoad", "gfx/menu/projectBox.svg", 200, 130, "gfx/menu/Ubuntu-Bold");
+    EnableUsername = new ButtonObject("Username: clickToLoad", GFX_PROJECT_BOX, 200, 130, FONT_UBUNTU_BOLD);
     EnableUsername->text->setColor(Math::color(0, 0, 0, 255));
     EnableUsername->text->setScale(0.5);
-    ChangeUsername = new ButtonObject("name: Player", "gfx/menu/projectBox.svg", 200, 180, "gfx/menu/Ubuntu-Bold");
+    ChangeUsername = new ButtonObject("name: Player", GFX_PROJECT_BOX, 200, 180, FONT_UBUNTU_BOLD);
     ChangeUsername->text->setColor(Math::color(0, 0, 0, 255));
     ChangeUsername->text->setScale(0.5);
 

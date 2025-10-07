@@ -68,7 +68,11 @@ int Value::asInt() const {
         return std::get<int>(value);
     } else if (isDouble()) {
         auto doubleValue = std::get<double>(value);
+#ifdef __DJGPP__
+        return static_cast<int>(round(doubleValue));
+#else
         return static_cast<int>(std::round(doubleValue));
+#endif
     } else if (isString()) {
         auto &strValue = std::get<std::string>(value);
 
@@ -81,7 +85,11 @@ int Value::asInt() const {
         }
 
         if (Math::isNumber(strValue)) {
+#ifdef __DJGPP__
+            return static_cast<int>(round(Math::parseNumber(strValue)));
+#else
             return static_cast<int>(std::round(Math::parseNumber(strValue)));
+#endif
         }
     } else if (isBoolean()) {
         return std::get<bool>(value) ? 1 : 0;

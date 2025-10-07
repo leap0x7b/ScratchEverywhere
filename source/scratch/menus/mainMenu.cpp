@@ -77,20 +77,20 @@ void MainMenu::init() {
     logo->x = 200;
     logoStartTime.start();
 
-    versionNumber = createTextObject("Beta Build 25", 0, 0, "gfx/menu/Ubuntu-Bold");
+    versionNumber = createTextObject("Beta Build 25", 0, 0, FONT_UBUNTU_BOLD);
     versionNumber->setCenterAligned(false);
     versionNumber->setScale(0.75);
 
-    splashText = createTextObject(Unzip::getSplashText(), 0, 0, "gfx/menu/Ubuntu-Bold");
+    splashText = createTextObject(Unzip::getSplashText(), 0, 0, FONT_UBUNTU_BOLD);
     splashText->setCenterAligned(true);
     splashText->setColor(Math::color(243, 154, 37, 255));
     if (splashText->getSize()[0] > logo->image->getWidth() * 0.95) {
         splashText->scale = (float)logo->image->getWidth() / (splashText->getSize()[0] * 1.15);
     }
 
-    loadButton = new ButtonObject("", "gfx/menu/play.svg", 100, 180, "gfx/menu/Ubuntu-Bold");
+    loadButton = new ButtonObject("", "gfx/menu/play.svg", 100, 180, FONT_UBUNTU_BOLD);
     loadButton->isSelected = true;
-    settingsButton = new ButtonObject("", "gfx/menu/settings.svg", 300, 180, "gfx/menu/Ubuntu-Bold");
+    settingsButton = new ButtonObject("", "gfx/menu/settings.svg", 300, 180, FONT_UBUNTU_BOLD);
 
     mainMenuControl = new ControlObject();
     mainMenuControl->selectedObject = loadButton;

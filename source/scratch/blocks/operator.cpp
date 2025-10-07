@@ -95,7 +95,11 @@ Value OperatorBlocks::mod(Block &block, Sprite *sprite) {
 Value OperatorBlocks::round(Block &block, Sprite *sprite) {
     Value value1 = Scratch::getInputValue(block, "NUM", sprite);
     if (value1.isNumeric()) {
+#ifdef __DJGPP__
+        return Value(static_cast<int>(::round(value1.asDouble())));
+#else
         return Value(static_cast<int>(std::round(value1.asDouble())));
+#endif
     }
     return Value(0);
 }

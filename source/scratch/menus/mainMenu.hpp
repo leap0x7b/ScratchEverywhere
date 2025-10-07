@@ -11,6 +11,21 @@
 #include <whb/sdcard.h>
 #endif
 
+// TODO: turn all the gfx/menu items into macro defines
+#ifdef __DOS__
+#define GFX_BUTTON_BACK       "gfx/menu/btnBack.svg"
+#define GFX_NO_PROJECTS       "gfx/menu/noProj.svg"
+#define GFX_OPTION_BOX        "gfx/menu/optBox.svg"
+#define GFX_PROJECT_BOX       "gfx/menu/projBox.svg"
+#define GFX_PROJECT_BOX_FAST  "gfx/menu/pBoxFast.png"
+#else
+#define GFX_BUTTON_BACK       "gfx/menu/buttonBack.svg"
+#define GFX_NO_PROJECTS       "gfx/menu/noProjects.svg"
+#define GFX_OPTION_BOX        "gfx/menu/optionBox.svg"
+#define GFX_PROJECT_BOX       "gfx/menu/projectBox.svg"
+#define GFX_PROJECT_BOX_FAST  "gfx/menu/projectBoxFast.png"
+#endif
+
 class Menu {
   public:
     bool isInitialized = false;

@@ -58,14 +58,14 @@ extern std::string customUsername;
 std::vector<int> Input::getTouchPosition() {
     std::vector<int> pos;
     int rawMouseX, rawMouseY;
-#if defined(VITA) || defined(__SWITCH__) || defined(__WIIU__) || defined(__3DS__) || defined(NDS)
-    pos.push_back(touchPosition.x);
-    pos.push_back(touchPosition.y);
-#else
-    SDL_GetMouseState(&rawMouseX, &rawMouseY);
-    pos.push_back(rawMouseX);
-    pos.push_back(rawMouseY);
-#endif
+    if (touchActive) {
+        pos.push_back(touchPosition.x);
+        pos.push_back(touchPosition.y);
+    } else {
+        SDL_GetMouseState(&rawMouseX, &rawMouseY);
+        pos.push_back(rawMouseX);
+        pos.push_back(rawMouseY);
+    }
 
     return pos;
 }
@@ -259,8 +259,7 @@ void Input::getInput() {
             BlockExecutor::runAllBlocksByOpcode("event_whenkeypressed");
     } else keyHeldFrames = 0;
 
-// TODO: Add way to disable touch input (currently overrides mouse input.)
-#if defined(VITA) || defined(__SWITCH__) || defined(__WIIU__) || defined(__3DS__) || defined(NDS)
+    // TODO: Add way to disable touch input (currently overrides mouse input.)
     if (touchActive) {
         // Transform touch coordinates to Scratch space
         auto coords = screenToScratchCoords(touchPosition.x, touchPosition.y, windowWidth, windowHeight);
@@ -269,7 +268,6 @@ void Input::getInput() {
         mousePointer.isPressed = touchActive;
         return;
     }
-#endif
 
     // Get raw mouse coordinates
     std::vector<int> rawMouse = getTouchPosition();

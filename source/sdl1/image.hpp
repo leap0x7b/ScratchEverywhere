@@ -49,6 +49,6 @@ class SDL_Image {
     ~SDL_Image();
 };
 
-SDL_Surface* SVGToSurface(const char* svg_data, size_t svg_size);
+SDL_Surface *SVGToSurface(const char *svg_data, size_t svg_size);
 
 extern std::unordered_map<std::string, SDL_Image *> images;

@@ -2,6 +2,7 @@
 #include "../scratch/render.hpp"
 #include "os.hpp"
 #include "text.hpp"
+#include <SDL/SDL_gfxBlitFunc.h>
 #include <SDL/SDL_rotozoom.h>
 #include <SDL/SDL_video.h>
 #include <iostream>
@@ -139,11 +140,10 @@ void TextObjectSDL::updateTexture() {
     Sint16 currentY = 0;
     for (const auto &line : lines) {
         if (!line.empty()) {
-        	// FIXME: TTF_RenderUTF8_Blended doesn't work and shows nothing for whatever reason, use TTF_RenderUTF8_Solid for now
-            SDL_Surface *lineSurface = TTF_RenderUTF8_Solid(font, line.c_str(), sdlColor);
+            SDL_Surface *lineSurface = TTF_RenderUTF8_Blended(font, line.c_str(), sdlColor);
             if (lineSurface) {
                 SDL_Rect destRect = {0, currentY, static_cast<Uint16>(lineSurface->w), static_cast<Uint16>(lineSurface->h)};
-                SDL_BlitSurface(lineSurface, nullptr, compositeSurface, &destRect);
+                SDL_gfxBlitRGBA(lineSurface, nullptr, compositeSurface, &destRect);
                 SDL_FreeSurface(lineSurface);
             }
         }
@@ -179,9 +179,9 @@ void TextObjectSDL::setText(std::string txt) {
 }
 
 void TextObjectSDL::render(int xPos, int yPos) {
-	if (!texture || !renderer) return;
+    if (!texture || !renderer) return;
 
-    SDL_Surface* surface = texture;
+    SDL_Surface *surface = texture;
     bool free = false;
 
     if (scale != 1.0f) {

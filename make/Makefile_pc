@@ -58,9 +58,9 @@ CFLAGS_BASE		+=	-DENABLE_CLOUDVARS
 LDFLAGS				+=	-lmist++ -lcurl
 
 # Mist++ Version Check
-#ifeq ($(shell pkg-config --atleast-version=0.1.4 mist++ >/dev/null 2>&1; echo $$?),1)
-#$(error "[ERROR] Mist++ must be v0.1.4 or newer.")
-#endif
+ifeq ($(shell pkg-config --atleast-version=0.1.4 mist++ >/dev/null 2>&1; echo $$?),1)
+$(error "[ERROR] Mist++ must be v0.1.4 or newer.")
+endif
 endif
 
 CXXFLAGS_BASE := $(CFLAGS_BASE) -std=c++17 -Wall -fexceptions

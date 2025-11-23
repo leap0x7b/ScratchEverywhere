@@ -73,7 +73,7 @@ void Image::render(double xPos, double yPos, bool centered) {
     }
 }
 
-// FIXME: nine-slice rendering wasn't working properly for whatever reason, use normal rendering for now
+// FIXME: SDL_BlitSurface doesn't have support for scaling. Omit 9-slice rendering for now.
 void Image::renderNineslice(double xPos, double yPos, double width, double height, double padding, bool centered) {
 #if 1
     render(xPos, yPos, centered);

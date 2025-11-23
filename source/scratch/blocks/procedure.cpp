@@ -5,10 +5,14 @@
 #include "unzip.hpp"
 #include "value.hpp"
 
-#ifdef SDL_BUILD
+#ifdef SDL2_BUILD
 #include <SDL2/SDL.h>
 
 extern SDL_GameController *controller;
+#elif defined(SDL1_BUILD)
+#include <SDL/SDL.h>
+
+extern SDL_Joystick *controller;
 #endif
 
 Value ProcedureBlocks::stringNumber(Block &block, Sprite *sprite) {
@@ -22,8 +26,10 @@ Value ProcedureBlocks::stringNumber(Block &block, Sprite *sprite) {
     if (name == "Scratch Everywhere! controller") {
 #ifdef __3DS__
         return Value("3DS");
-#elif defined(SDL_BUILD)
+#elif defined(SDL2_BUILD)
         if (controller != nullptr) return Value(std::string(SDL_GameControllerName(controller)));
+#elif defined(SDL1_BUILD)
+        if (controller != nullptr) return Value(std::string(SDL_JoystickName(SDL_JoystickIndex(controller))));
 #endif
     }
     return BlockExecutor::getCustomBlockValue(name, sprite, block);

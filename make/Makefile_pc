@@ -1,9 +1,20 @@
 .PHONY: all clean debug release
 
+BACKEND    := sdl2
 TARGET     := Scratch-pc
 BUILD      := build/pc
 SOURCES    := source source/scratch source/scratch/blocks source/scratch/menus include/miniz include/nlohmann
 INCLUDES   := include source/scratch source/scratch/blocks source/scratch/menus include/nlohmann
+ifeq ($(BACKEND),sdl2)
+SOURCES    += source/sdl2 source/sdl2/audio
+INCLUDES   += source/sdl2 source/sdl2/audio
+else ifeq ($(BACKEND),sdl1)
+SOURCES    += source/sdl1 source/sdl1/audio
+INCLUDES   += source/sdl1 source/sdl1/audio
+else ifeq ($(BACKEND),headless)
+SOURCES    += source/headless
+INCLUDES   += source/headless
+endif
 
 CXX        := g++
 CC         := gcc
@@ -12,27 +23,29 @@ CC         := gcc
 ENABLE_CLOUDVARS	?=	0
 ENABLE_AUDIO	?=	1
 ENABLE_LOADSCREEN	?=	1
-ENABLE_HEADLESS ?= 0
 
-ifeq ($(ENABLE_HEADLESS),0)
-SOURCES	+=	source/sdl source/sdl/audio
-INCLUDES	+=	source/sdl source/sdl/audio
-LDFLAGS    := -lSDL2 -lSDL2_image -lSDL2_ttf -lSDL2_gfx
-CFLAGS_BASE	:=  -DSDL_BUILD
-else
-SOURCES	+=	source/headless
-INCLUDES	+=	source/headless
-LDFLAGS    :=
-CFLAGS_BASE	:= -DHEADLESS_BUILD
+# Base compiler flags
+CFLAGS_BASE   := -D__PC__
+
+ifeq ($(BACKEND),sdl2)
+LDFLAGS := -lSDL2 -lSDL2_image -lSDL2_ttf -lSDL2_gfx
+CFLAGS_BASE +=  -DSDL2_BUILD
+ifeq ($(ENABLE_AUDIO),1)
+LDFLAGS	+=	-lSDL2_mixer
+endif
+else ifeq ($(BACKEND),sdl1)
+LDFLAGS := -lSDL -lSDL_image -lSDL_ttf -lSDL_gfx
+CFLAGS_BASE +=  -DSDL1_BUILD -I/usr/include/SDL
+ifeq ($(ENABLE_AUDIO),1)
+LDFLAGS	+=	-lSDL_mixer
+endif
+else ifeq ($(BACKEND),headless)
+CFLAGS_BASE +=  -DHEADLESS_BUILD
 ENABLE_AUDIO	=	0
 ENABLE_LOADSCREEN	=	0
 endif
 
-CFLAGS_BASE   += -D__PC__
-
-
 ifeq ($(ENABLE_AUDIO),1)
-LDFLAGS	+=	-lSDL2_mixer
 CFLAGS_BASE	+=	-DENABLE_AUDIO
 endif
 
@@ -45,9 +58,9 @@ CFLAGS_BASE		+=	-DENABLE_CLOUDVARS
 LDFLAGS				+=	-lmist++ -lcurl
 
 # Mist++ Version Check
-ifeq ($(shell pkg-config --atleast-version=0.1.4 mist++ >/dev/null 2>&1; echo $$?),1)
-$(error "[ERROR] Mist++ must be v0.1.4 or newer.")
-endif
+#ifeq ($(shell pkg-config --atleast-version=0.1.4 mist++ >/dev/null 2>&1; echo $$?),1)
+#$(error "[ERROR] Mist++ must be v0.1.4 or newer.")
+#endif
 endif
 
 CXXFLAGS_BASE := $(CFLAGS_BASE) -std=c++17 -Wall -fexceptions

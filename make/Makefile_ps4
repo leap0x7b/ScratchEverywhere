@@ -16,16 +16,16 @@ ENABLE_LOADSCREEN	?= 1
 LIBS        := -lc -lkernel -lc++ -lSceLibcInternal -lSceSysmodule -lSceAudioOut -lSceUserService \
 			    -lScePigletv2VSH -lScePrecompiledShaders -lSceFreeType -lScePad -lSceSystemService \
 			    -lSDL2 -lSDL2_image -lSDL2_ttf -lSDL2_gfx -lsamplerate -lpthread \
-			   
+
 # Additional compile flags.
-EXTRAFLAGS  := -fcolor-diagnostics -fexceptions -fcxx-exceptions -O2 -Wall -D__PS4__ -DSDL_BUILD -DCONSOLE -DMOUSE_INPUT
+EXTRAFLAGS  := -fcolor-diagnostics -fexceptions -fcxx-exceptions -O2 -Wall -D__PS4__ -DSDL2_BUILD -DCONSOLE -DMOUSE_INPUT
 
 # Build target
 TOOLCHAIN   := $(OO_PS4_TOOLCHAIN)
 TARGET		:= scratch-ps4
 BUILD		:= build/ps4
 GRAPHICS	:= gfx
-SOURCES		:= source source/scratch source/scratch/blocks source/scratch/menus source/sdl source/sdl/audio include/miniz include/nlohmann
+SOURCES		:= source source/scratch source/scratch/blocks source/scratch/menus source/sdl source/sdl2/audio include/miniz include/nlohmann
 INCLUDES	:= include source/scratch source/scratch/blocks source/scratch/menus source/sdl include/nlohmann
 FILES		:= eboot.bin sce_module/libc.prx sce_module/libSceFios2.prx\
 			   sce_sys/param.sfo sce_sys/icon0.png sce_sys/pic0.png sce_sys/pic1.png sce_sys/about/right.sprx\
@@ -58,7 +58,7 @@ endif
 
 # Handle enable audio
 ifeq ($(ENABLE_AUDIO),1)
-LIBS		+= -lSDL2_mixer -lmodplug -lmpg123 -logg -lopus -lopusfile -lvorbis -lvorbisfile 
+LIBS		+= -lSDL2_mixer -lmodplug -lmpg123 -logg -lopus -lopusfile -lvorbis -lvorbisfile
 EXTRAFLAGS	+= -DENABLE_AUDIO
 endif
 
@@ -113,10 +113,10 @@ $(BUILD)/sce_sys/param.sfo: Makefile
 	$(TOOLCHAIN)/bin/$(CDIR)/PkgTool.Core sfo_setentry $@ APP_VER --type Utf8 --maxsize 8 --value '$(VERSION)'
 	$(TOOLCHAIN)/bin/$(CDIR)/PkgTool.Core sfo_setentry $@ ATTRIBUTE --type Integer --maxsize 18 --value 81936
 	$(TOOLCHAIN)/bin/$(CDIR)/PkgTool.Core sfo_setentry $@ CATEGORY --type Utf8 --maxsize 4 --value 'gde'
-	$(TOOLCHAIN)/bin/$(CDIR)/PkgTool.Core sfo_setentry $@ FORMAT --type Utf8 --maxsize 4 --value 'obs'  
+	$(TOOLCHAIN)/bin/$(CDIR)/PkgTool.Core sfo_setentry $@ FORMAT --type Utf8 --maxsize 4 --value 'obs'
 	$(TOOLCHAIN)/bin/$(CDIR)/PkgTool.Core sfo_setentry $@ CONTENT_ID --type Utf8 --maxsize 48 --value '$(CONTENT_ID)'
-	$(TOOLCHAIN)/bin/$(CDIR)/PkgTool.Core sfo_setentry $@ DOWNLOAD_DATA_SIZE --type Integer --maxsize 4 --value 0 
-	$(TOOLCHAIN)/bin/$(CDIR)/PkgTool.Core sfo_setentry $@ SYSTEM_VER --type Integer --maxsize 4 --value 0 
+	$(TOOLCHAIN)/bin/$(CDIR)/PkgTool.Core sfo_setentry $@ DOWNLOAD_DATA_SIZE --type Integer --maxsize 4 --value 0
+	$(TOOLCHAIN)/bin/$(CDIR)/PkgTool.Core sfo_setentry $@ SYSTEM_VER --type Integer --maxsize 4 --value 0
 	$(TOOLCHAIN)/bin/$(CDIR)/PkgTool.Core sfo_setentry $@ TITLE --type Utf8 --maxsize 128 --value '$(TITLE)'
 	$(TOOLCHAIN)/bin/$(CDIR)/PkgTool.Core sfo_setentry $@ TITLE_ID --type Utf8 --maxsize 12 --value '$(TITLE_ID)'
 	$(TOOLCHAIN)/bin/$(CDIR)/PkgTool.Core sfo_setentry $@ VERSION --type Utf8 --maxsize 8 --value '$(VERSION)'

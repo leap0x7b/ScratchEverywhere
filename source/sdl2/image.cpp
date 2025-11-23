@@ -105,22 +105,15 @@ void Image::renderNineslice(double xPos, double yPos, double width, double heigh
 
     image->freeTimer = image->maxFreeTime;
 
-    SDL_Texture *originalTexture = image->spriteTexture;
-    SDL_ScaleMode originalScaleMode;
-    SDL_GetTextureScaleMode(originalTexture, &originalScaleMode);
-    SDL_SetTextureScaleMode(originalTexture, SDL_ScaleModeNearest);
-
-    SDL_RenderCopy(renderer, originalTexture, &srcTopLeft, &dstTopLeft);
-    SDL_RenderCopy(renderer, originalTexture, &srcTop, &dstTop);
-    SDL_RenderCopy(renderer, originalTexture, &srcTopRight, &dstTopRight);
-    SDL_RenderCopy(renderer, originalTexture, &srcLeft, &dstLeft);
-    SDL_RenderCopy(renderer, originalTexture, &srcCenter, &dstCenter);
-    SDL_RenderCopy(renderer, originalTexture, &srcRight, &dstRight);
-    SDL_RenderCopy(renderer, originalTexture, &srcBottomLeft, &dstBottomLeft);
-    SDL_RenderCopy(renderer, originalTexture, &srcBottom, &dstBottom);
-    SDL_RenderCopy(renderer, originalTexture, &srcBottomRight, &dstBottomRight);
-
-    SDL_SetTextureScaleMode(originalTexture, originalScaleMode);
+    SDL_RenderCopy(renderer, image->spriteTexture, &srcTopLeft, &dstTopLeft);
+    SDL_RenderCopy(renderer, image->spriteTexture, &srcTop, &dstTop);
+    SDL_RenderCopy(renderer, image->spriteTexture, &srcTopRight, &dstTopRight);
+    SDL_RenderCopy(renderer, image->spriteTexture, &srcLeft, &dstLeft);
+    SDL_RenderCopy(renderer, image->spriteTexture, &srcCenter, &dstCenter);
+    SDL_RenderCopy(renderer, image->spriteTexture, &srcRight, &dstRight);
+    SDL_RenderCopy(renderer, image->spriteTexture, &srcBottomLeft, &dstBottomLeft);
+    SDL_RenderCopy(renderer, image->spriteTexture, &srcBottom, &dstBottom);
+    SDL_RenderCopy(renderer, image->spriteTexture, &srcBottomRight, &dstBottomRight);
 }
 
 /**

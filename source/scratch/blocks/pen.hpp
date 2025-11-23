@@ -12,10 +12,14 @@ extern C3D_Tex *penTex;
 
 #define TEXTURE_OFFSET 15
 
-#elif defined(SDL_BUILD)
+#elif defined(SDL2_BUILD)
 #include <SDL2/SDL.h>
 
 extern SDL_Texture *penTexture;
+#elif defined(SDL1_BUILD)
+#include <SDL/SDL.h>
+
+extern SDL_Surface *penSurface;
 #else
 #warning Unsupported platform for pen.
 #endif

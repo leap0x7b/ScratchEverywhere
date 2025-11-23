@@ -3,8 +3,10 @@
 #include "menus/loading.hpp"
 #ifdef __3DS__
 #include <3ds.h>
-#elif defined(SDL_BUILD)
+#elif defined(SDL2_BUILD)
 #include "SDL2/SDL.h"
+#elif defined(SDL1_BUILD)
+#include "SDL/SDL.h"
 #endif
 
 volatile int Unzip::projectOpened = 0;
@@ -144,9 +146,12 @@ bool Unzip::load() {
     loading.cleanup();
     osSetSpeedupEnable(false);
 
-#elif defined(SDL_BUILD) // create SDL2 thread for loading screen
-
+#elif defined(SDL2_BUILD) || defined(SDL1_BUILD) // create SDL2 thread for loading screen
+#ifdef SDL2_BUILD
     SDL_Thread *thread = SDL_CreateThread(projectLoaderThread, "LoadingScreen", nullptr);
+#else
+    SDL_Thread *thread = SDL_CreateThread(projectLoaderThread, nullptr);
+#endif
 
     if (thread != NULL && thread != nullptr) {
 

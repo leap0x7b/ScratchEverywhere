@@ -5,7 +5,7 @@ on:
     paths:
       - make/Makefile_vita
       - source/scratch/**
-      - source/sdl/**
+      - source/sdl2/**
       - gfx/vita/**
       - gfx/menu/**
       - include/**

@@ -13,12 +13,19 @@ C2D_Image penImage;
 C3D_RenderTarget *penRenderTarget;
 Tex3DS_SubTexture penSubtex;
 C3D_Tex *penTex;
-#elif defined(SDL_BUILD)
-#include "../../sdl/image.hpp"
-#include "../../sdl/render.hpp"
+#elif defined(SDL2_BUILD)
+#include "../../sdl2/image.hpp"
+#include "../../sdl2/render.hpp"
 #include <SDL2/SDL2_gfxPrimitives.h>
 
 SDL_Texture *penTexture;
+#elif defined(SDL1_BUILD)
+#include "../../sdl1/image.hpp"
+#include "../../sdl1/render.hpp"
+#include <SDL/SDL_gfxPrimitives.h>
+#include <SDL/SDL_rotozoom.h>
+
+SDL_Surface *penSurface;
 #else
 #warning Unsupported Platform for pen.
 #endif
@@ -55,6 +62,14 @@ BlockResult PenBlocks::PenDown(Block &block, Sprite *sprite, bool *withoutScreen
     SDL_RenderCopy(renderer, tempTexture, NULL, NULL);
     SDL_SetRenderTarget(renderer, nullptr);
     SDL_DestroyTexture(tempTexture);
+#elif defined(SDL1_BUILD)
+    int penWidth = penSurface->w;
+    int penHeight = penSurface->h;
+
+    const double scale = (penHeight / static_cast<double>(Scratch::projectHeight));
+
+    const ColorRGB rgbColor = HSB2RGB(sprite->penData.color);
+    filledCircleRGBA(penSurface, sprite->xPosition * scale + penWidth / 2.0f, -sprite->yPosition * scale + penHeight / 2.0f, (sprite->penData.size / 2.0f) * scale, rgbColor.r, rgbColor.g, rgbColor.b, (100 - sprite->penData.transparency) / 100.0f * 255);
 #elif defined(__3DS__)
     const ColorRGB rgbColor = HSB2RGB(sprite->penData.color);
     const int transparency = 255 * (1 - sprite->penData.transparency / 100);
@@ -182,7 +197,7 @@ BlockResult PenBlocks::ChangePenSizeBy(Block &block, Sprite *sprite, bool *witho
     return BlockResult::CONTINUE;
 }
 
-#ifdef SDL_BUILD
+#if defined(SDL2_BUILD)
 BlockResult PenBlocks::EraseAll(Block &block, Sprite *sprite, bool *withoutScreenRefresh, bool fromRepeat) {
     if (!Render::initPen()) return BlockResult::CONTINUE;
     SDL_SetRenderTarget(renderer, penTexture);
@@ -258,6 +273,71 @@ BlockResult PenBlocks::Stamp(Block &block, Sprite *sprite, bool *withoutScreenRe
     SDL_RenderCopyEx(renderer, image->spriteTexture, &image->textureRect, &image->renderRect, Math::radiansToDegrees(renderRotation), &center, flip);
 
     SDL_SetRenderTarget(renderer, NULL);
+
+    return BlockResult::CONTINUE;
+}
+#elif defined(SDL1_BUILD)
+BlockResult PenBlocks::EraseAll(Block &block, Sprite *sprite, bool *withoutScreenRefresh, bool fromRepeat) {
+    if (!Render::initPen()) return BlockResult::CONTINUE;
+    SDL_FillRect(penSurface, NULL, SDL_MapRGBA(penSurface->format, 0, 0, 0, 0));
+    return BlockResult::CONTINUE;
+}
+
+BlockResult PenBlocks::Stamp(Block &block, Sprite *sprite, bool *withoutScreenRefresh, bool fromRepeat) {
+    if (!sprite->visible || !Render::initPen()) return BlockResult::CONTINUE;
+
+    if (projectType == UNZIPPED) {
+        Image::loadImageFromFile(sprite->costumes[sprite->currentCostume].fullName, sprite);
+    } else {
+        Image::loadImageFromSB3(&Unzip::zipArchive, sprite->costumes[sprite->currentCostume].fullName, sprite);
+    }
+
+    const auto &imgFind = images.find(sprite->costumes[sprite->currentCostume].id);
+    if (imgFind == images.end()) {
+        Log::logWarning("Invalid Image for Stamp");
+        return BlockResult::CONTINUE;
+    }
+    imgFind->second->freeTimer = imgFind->second->maxFreeTime;
+
+    sprite->rotationCenterX = sprite->costumes[sprite->currentCostume].rotationCenterX;
+    sprite->rotationCenterY = sprite->costumes[sprite->currentCostume].rotationCenterY;
+
+    SDL_Image *image = imgFind->second;
+    image->freeTimer = image->maxFreeTime;
+    bool flip = false;
+
+    sprite->spriteWidth = image->textureRect.w / 2;
+    sprite->spriteHeight = image->textureRect.h / 2;
+    if (sprite->costumes[sprite->currentCostume].isSVG) {
+        sprite->spriteWidth *= 2;
+        sprite->spriteHeight *= 2;
+    }
+    const double rotation = sprite->rotation - 90.0f;
+    double renderRotation = rotation;
+
+    if (sprite->rotationStyle == sprite->LEFT_RIGHT) {
+        if (std::cos(Math::degreesToRadians(rotation)) < 0) flip = true;
+        renderRotation = 0;
+    }
+    if (sprite->rotationStyle == sprite->NONE) renderRotation = 0;
+
+    int penWidth = penSurface->w;
+    int penHeight = penSurface->h;
+    const double scale = (penHeight / static_cast<double>(Scratch::projectHeight));
+
+    SDL_SetAlpha(image->spriteTexture, SDL_SRCALPHA, 255 * (1.0f - std::clamp(sprite->ghostEffect, 0.0f, 100.0f) / 100.0f));
+    if (flip) {
+        image->spriteTexture = zoomSurface(image->spriteTexture, -1, 1, 0);
+    }
+
+    SDL_Surface *rotozoomed = rotozoomSurface(image->spriteTexture, renderRotation, sprite->size / 100.0 * scale, 0);
+
+    SDL_Rect dest;
+    dest.x = (sprite->xPosition * scale + penWidth / 2.0f) - (rotozoomed->w / 2);
+    dest.y = (-sprite->yPosition * scale + penHeight / 2.0f) - (rotozoomed->h / 2);
+
+    SDL_BlitSurface(rotozoomed, NULL, penSurface, &dest);
+    SDL_FreeSurface(rotozoomed);
 
     return BlockResult::CONTINUE;
 }

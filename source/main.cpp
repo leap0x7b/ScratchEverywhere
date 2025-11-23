@@ -8,8 +8,12 @@
 #include <switch.h>
 #endif
 
-#ifdef SDL_BUILD
+#ifdef SDL2_BUILD
 #include <SDL2/SDL.h>
+#endif
+
+#ifdef SDL1_BUILD
+#include <SDL/SDL.h>
 #endif
 
 #ifdef __EMSCRIPTEN__
@@ -87,7 +91,7 @@ int main(int argc, char **argv) {
     srand(time(NULL));
 
 #ifdef __EMSCRIPTEN__
-    emscripten_sleep(1500); // Ummm, this makes it so it has time to load the project from the url, not hacky at all, trust me bro. 
+    emscripten_sleep(1500); // Ummm, this makes it so it has time to load the project from the url, not hacky at all, trust me bro.
                             //edit 2: sounds good for me, approved.
 #endif
 

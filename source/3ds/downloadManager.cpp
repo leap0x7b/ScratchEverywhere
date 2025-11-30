@@ -5,7 +5,6 @@
 #include <cstdio>
 #include <cstring>
 #include <curl/curl.h>
-#include <filesystem>
 #include <fstream>
 #include <sys/select.h>
 #include <sys/stat.h>
@@ -126,7 +125,7 @@ void DownloadManager::processQueueThreaded() {
 }
 
 void DownloadManager::performDownload(std::shared_ptr<DownloadItem> item) {
-    /*if (!std::filesystem::exists("romfs:/gfx/certs.pem")) {
+    /*if (!OS::fileExists("romfs:/gfx/certs.pem")) {
         Log::log("DownloadManager: certs.pem not found, download cannot proceed.");
         item->finished = true;
         item->success = false;
